@@ -1,2 +1,2 @@
-# Software2018
-Complete algorithm for Scarlet Space Hawks (Illinois Tech's NASA Robotics Mining Competition Team 2018)
+# Motors Code
+This is arduino the code for the motor controllers
