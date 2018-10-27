@@ -203,7 +203,7 @@ void LinearActuatorPair::loop()
   channel[1]->loop();
   currentPos[0] = channel[0]->getCurrentVal();
   currentPos[1] = channel[1]->getCurrentVal();
-  
+
 }
 /*!
 Executes begin methods of all channels.
@@ -284,9 +284,9 @@ void Motor::move(long angle, long speed)
   //done = true;
 }
 void Motor::stop() {
-  
+
   this->speed = 0;
-  
+
 }
 
 Motors::Motors(KangarooSerial & K, char name)
@@ -537,7 +537,7 @@ RMCKangaroo::RMCKangaroo(USARTClass &serial)
 {
   SerialPort = &serial;
   K = new KangarooSerial(*SerialPort);
-  motors = new Motors(*K, '3');
+  motors = new Motors(*K, '1');
   linearActuatorPair = new LinearActuatorPair(*K, '1');
   auger = new Auger(2, 3);
   slider = new Slider(*K, '7');
@@ -558,12 +558,12 @@ Initiates Serial Communication.
 Executes begin methods of all Linear Actuators and Motors.
 */
 void RMCKangaroo::begin() {
-  SerialPort->begin(38400);
+  SerialPort->begin(9600);
   stopAll = false; // global
   motors->begin();
-  linearActuatorPair->begin();
+  /*linearActuatorPair->begin();
   slider->begin();
-  conveyor->begin();
+  conveyor->begin();*/
 }
 
 void RMCKangaroo::getStatus(KangarooError *errorStatuses)
@@ -600,7 +600,7 @@ void RMCKangaroo::stop() {
   linearActuatorPair->stop();
   slider->stop();
   auger->stop();
-  conveyor->stop();  
+  conveyor->stop();
 }
 
 Slider::Slider(KangarooSerial & K, char name) : LinearActuator(K, name)

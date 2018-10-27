@@ -85,7 +85,7 @@ public:
   void getStatus(KangarooError *output, int i);
 
   void stop();
-  
+
   //Specify the links and initial tuning parameters
   double Kp = 0.4, Ki = 0, Kd = 0;
   PID* syncPID;
@@ -146,7 +146,7 @@ public:
   double Setpoint, Input, Output;
   char currentSpeeds[5];
   void getStatus(KangarooError *output, int startIndex);
-  
+
   //Specify the links and initial tuning parameters
   double Kp = 0, Ki = 0, Kd = 0;
   PID* syncPID;
@@ -208,5 +208,5 @@ public:
   void getStatus(KangarooError *errorStatuses);
   void stop();
   KangarooStatus status[DEFAULT_NUMBER_OF_CHANNEL];
-  
+
 };
