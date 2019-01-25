@@ -1,31 +1,35 @@
 bool stopAll = false;
 
 #include "RMCKangaroo.hpp"
+
+// pid motor controllers
 RMCKangaroo k(Serial2);
 
-
 /*
-
-  [
-    Command: uint8_t
-    Device: uint8_t
-    Val1: int8_t
-    Val2: int8_t
-    Checksum: uint8_t
-  ]
-
+instruction set defined here:
+https://docs.google.com/document/d/1cUTG8RFGPtx6UG5p6J76NQImksJC-LNIKzTHBX8p66E/edit?usp=sharing
+    [
+        Command: uint8_t
+        Device: uint8_t
+        Val1: int8_t
+        Val2: int8_t
+        Checksum: uint8_t
+    ]
 */
 
+
+
 void setup() {
-  Serial.begin(9600);
-  k.begin();
-  k.motors->drive(10, 100);
+    Serial.begin(9600);
+    Serial1.begin(9600);
+    k.begin();
 }
 
-
 void loop() {
+    //k.motors->drive(10, 100);
     acceptCommands();
-
+    //checkErrors(); ?
+    k.loop();
 }
 
 
@@ -33,16 +37,10 @@ void loop() {
 // if not, redurns whats needed to make it a valid command
 bool checkSum(const char msg[], const uint8_t len) {
 
-    // total parts
+    // total parts (note: integer overflow)
     char sum = 0;
     for (uint8_t i = 0; i < len; i++)
         sum += msg[i];
-
-    // if not zero its not valid
-    if (sum != 0) {
-        Serial.print("invalid msg totaled to ");
-        Serial.println(sum);
-    }
 
     return sum;
 }
@@ -69,29 +67,39 @@ void sendMulti(const char device, const char v1, const char v2) {
 
 
 
-
 void acceptCommands() {
     while (Serial1.available() > 4) {
-
+        Serial.println("msg received:");
         // read msg from serial
         // should have 5 vals: cmd, device, v1, v2, checksum
         char msg[5];
-        Serial.readBytes(msg, 5);
+        Serial1.readBytes(msg, 5);
+        for (char c : msg)
+            Serial.println((int) c);
 
         // checksum should make msg total to zero otherwise its invalid
-        bool valid = checkSum(msg, 5);
-        while (!valid && Serial1.available()) {
+        char sum = checkSum(msg, 5);
+        while (sum != 0 && Serial1.available()) {
+            Serial.println("invalid msg");
+            Serial.print("sum:");
+            Serial.println((int) sum);
 
             // last checksum invalid so lets get a new char to see
+            // shift everything to the right by one
             for (uint8_t i = 4; i > 0; i--)
                 msg[i] = msg[i - 1];
+            // read new start byte
             msg[0] = Serial1.read();
-            valid = checkSum(msg, 5);
+
+            // check if it's valid
+            sum = checkSum(msg, 5);
         }
 
-        if (!valid) {
-            Serial.println("com failed");
-            k.motors->drive(0, 0);
+        if (sum != 0) {
+            Serial.print("com failed: ");
+            Serial.println((int) sum);
+
+            //k.motors->drive(0, 0);
             return;
         }
 
@@ -102,9 +110,10 @@ void acceptCommands() {
             case 0: cmdConfig(device, arg1, arg2);  break;
             case 1: cmdDrive(device, arg1, arg2);   break;
             case 2: cmdAuto(device, arg1, arg2);    break;
-            case 3: cmdSensorData(device, arg1, arg2); break;
+            case 3: cmdSensorData(device, arg1, arg2);  break;
             default:
-                Serial.println("invalid command received (passed checksum)");
+                Serial.print("invalid command received (passed checksum):");
+                Serial.println((int)cmd);
                 break;
         }
     }
@@ -142,25 +151,32 @@ void cmdConfig(char device, char v1, char v2) {
     case 10: // set speed limit for wheels
         break;
     case 11: // reset arduino
+        Serial.println("resetting arduino");
+        ((void (*)(void))0)(); // running fxn @ nullptr
+        Serial.println("this shouldnt print");
         break;
     case 12: // setup
         break;
     case 13: // start
         break;
     default:
-        Serial.println("command 0: invalid device");
+        Serial.print("command 0: invalid device");
+        Serial.println((int)device);
         break;
     }
 }
 
 // cmd 1
 void cmdDrive(char device, char v1, char v2) {
+
+    Serial.println("cmd drive recieved");
     switch (device) {
     case 0: // stop all
         k.motors->drive(0, 0);
         stopAll = true;
         break;
     case 1: case 2: case 3: case 4: // control specific wheel
+        Serial.println("driving specific wheel");
         k.motors->channel[device - 1]->setTargetSpeed((signed char) v1);
         break;
 
@@ -209,7 +225,8 @@ void cmdDrive(char device, char v1, char v2) {
         break;
 
     default:
-        Serial.println("Cmd 1: invalid device");
+        Serial.print("command 1: invalid device");
+        Serial.println((int)device);
         break;
     }
 }
@@ -240,7 +257,9 @@ void cmdAuto(char device, char v1, char v2) {
             // dump everything into arena's bin
             break;
         default:
-            Serial.println("cmd2: invalid operation");
+            Serial.print("command 2: invalid device");
+            Serial.println((int)device);
+            break;
     }
 }
 
@@ -284,6 +303,8 @@ void cmdSensorData(char device, char v1, char v2) {
             // then why is it here?
             break;
         default:
-            Serial.println("Cmd 3: invalid device");
+            Serial.print("command 3: invalid device");
+            Serial.println((int)device);
+            break;
     }
 }
