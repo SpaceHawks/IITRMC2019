@@ -153,19 +153,9 @@ public:
 };
 
 
-class Auger {
+class Auger : public Motor {
 public:
-  Auger(int enablePin, int reversePin);
-  int enablePin;
-  int reversePin;
-  void changeControlPins(int enablePin, int reversePin);
-  void attach(int enablePin, int reversePin);
-  void release();
-  void forward();
-  void reverse();
-  void setDirection(int enable, int direction);
-  void stop();
-  char currentPos;
+  Auger(KangarooSerial& K, char name);
 };
 
 class Slider : public LinearActuator {
