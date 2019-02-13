@@ -2,6 +2,10 @@ bool stopAll = false;
 
 #include "RMCKangaroo.hpp"
 
+// comment this line out if you want improved performance and don't need debug messages
+#define DEBUG_MODE
+
+
 // pid motor controllers
 RMCKangaroo k(Serial2);
 
@@ -20,7 +24,9 @@ https://docs.google.com/document/d/1cUTG8RFGPtx6UG5p6J76NQImksJC-LNIKzTHBX8p66E/
 
 
 void setup() {
+    #ifdef DEBUG_MODE
     Serial.begin(9600);
+    #endif
     Serial1.begin(9600);
     k.begin();
 }
@@ -45,8 +51,6 @@ bool checkSum(const char msg[], const uint8_t len) {
     return sum;
 }
 
-
-
 // send data to computer
 void sendData(char* data, const unsigned size) {
     data[size] = checkSum(data, size); // last gets replaced
@@ -66,10 +70,11 @@ void sendMulti(const char device, const char v1, const char v2) {
 }
 
 
-
 void acceptCommands() {
     while (Serial1.available() > 4) {
+        #ifdef DEBUG_MODE
         Serial.println("msg received:");
+        #endif
         // read msg from serial
         // should have 5 vals: cmd, device, v1, v2, checksum
         char msg[5];
@@ -80,9 +85,11 @@ void acceptCommands() {
         // checksum should make msg total to zero otherwise its invalid
         char sum = checkSum(msg, 5);
         while (sum != 0 && Serial1.available()) {
+            #ifdef DEBUG_MODE
             Serial.println("invalid msg");
             Serial.print("sum:");
             Serial.println((int) sum);
+            #endif
 
             // last checksum invalid so lets get a new char to see
             // shift everything to the right by one
@@ -96,8 +103,10 @@ void acceptCommands() {
         }
 
         if (sum != 0) {
+            #ifdef DEBUG_MODE
             Serial.print("com failed: ");
             Serial.println((int) sum);
+            #endif
 
             //k.motors->drive(0, 0);
             return;
@@ -112,8 +121,10 @@ void acceptCommands() {
             case 2: cmdAuto(device, arg1, arg2);    break;
             case 3: cmdSensorData(device, arg1, arg2);  break;
             default:
+                #ifdef DEBUG_MODE
                 Serial.print("invalid command received (passed checksum):");
                 Serial.println((int)cmd);
+                #endif
                 break;
         }
     }
@@ -131,7 +142,7 @@ void cmdConfig(char device, char v1, char v2) {
             1: sender disconnected
             2: redeiver connected
             3: receiger disconnected
-        arg2: ip address of remote device
+        arg2: ip address of remote device (impossible to fit into only one byte)
         */
         break;
     case 1: // Kangaroo error status
@@ -151,17 +162,21 @@ void cmdConfig(char device, char v1, char v2) {
     case 10: // set speed limit for wheels
         break;
     case 11: // reset arduino
+        #ifdef DEBUG_MODE
         Serial.println("resetting arduino");
+        #endif
+        // intentionally segfaulting lol
         ((void (*)(void))0)(); // running fxn @ nullptr
-        Serial.println("this shouldnt print");
         break;
     case 12: // setup
         break;
     case 13: // start
         break;
     default:
+        #ifdef DEBUG_MODE
         Serial.print("command 0: invalid device");
         Serial.println((int)device);
+        #endif
         break;
     }
 }
@@ -176,7 +191,6 @@ void cmdDrive(char device, char v1, char v2) {
         stopAll = true;
         break;
     case 1: case 2: case 3: case 4: // control specific wheel
-        Serial.println("driving specific wheel");
         k.motors->channel[device - 1]->setTargetSpeed((signed char) v1);
         break;
 
@@ -225,8 +239,10 @@ void cmdDrive(char device, char v1, char v2) {
         break;
 
     default:
+        #ifdef DEBUG_MODE
         Serial.print("command 1: invalid device");
         Serial.println((int)device);
+        #endif
         break;
     }
 }
@@ -257,8 +273,11 @@ void cmdAuto(char device, char v1, char v2) {
             // dump everything into arena's bin
             break;
         default:
+
+            #ifdef DEBUG_MODE
             Serial.print("command 2: invalid device");
             Serial.println((int)device);
+            #endif
             break;
     }
 }
@@ -303,8 +322,10 @@ void cmdSensorData(char device, char v1, char v2) {
             // then why is it here?
             break;
         default:
+            #ifdef DEBUG_MODE
             Serial.print("command 3: invalid device");
             Serial.println((int)device);
+            #endif
             break;
     }
 }
