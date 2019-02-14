@@ -1,17 +1,14 @@
+#This is a template for the completed work of the LIDAR team on 
+# 	mapping out the arena's obstacles
+
 from hokuyolx import HokuyoLX
 import Detect
 import Locate
 import Grouping
 
-#This is a template for the completed work of the LIDAR team on 
-# 	mapping out the arena's obstacles
-
 TARGET_STRIPE_WIDTH = 0
 STRIPE_INTENS_THRESHOLD = 0
-DETECTION_THRESHOLD = 0
 CHOICE_TO_LOCATE_THRESHOLD = 0
-GROUPING_THRESHOLD = 0
-
 
 def firstRun():
 	#This code should run simultaneous with the initial movement of 
@@ -63,22 +60,13 @@ def inMiningZone(backLidarCoord):
 
 	return position
 
-'''	
-def detectRocks(frontLIDAR):
-	#Using a threshold TBD, this function will save the angles 
-	# 	and distances from the first LIDAR 
-	#	that are tagged as irregular in shape (items that are 
-	# 	rocks compared to reasonable bumps in
-	# 	gravel)
-
-	
-
-#This function will use arguments consisting of the numpy array of points
-#   from the back LIDAR to find the points where reflectivity varies the
-#   most. Using these points, angles and distances will be used to locate the 
-#   coordinate of the BACK LIDAR SENSOR as well as the orientation of the 
-#   robot. Both values will be returned in a tuple
 def locateRobot(backLidarData):
+	#This function will use arguments consisting of the numpy array of points
+	#   from the back LIDAR to find the points where reflectivity varies the
+	#   most. Using these points, angles and distances will be used to locate the 
+	#   coordinate of the BACK LIDAR SENSOR as well as the orientation of the 
+	#   robot. Both values will be returned in a tuple
+
     #find the target points
 	targetPoints = [] 				#FIXME make this a numpy array
 	lastCoord = None
@@ -101,20 +89,3 @@ def locateRobot(backLidarData):
 
 def locateFrontLidar(backLidar):
     pass
-
-def locateRocks(rockCoords):
-	#Using the distances and angles marked as irregular in detectRocks(),
-	# 	 this function will give an (x,y) coordinate to the rocks by
-	# 	 referencing with the origin target
-	pass
-	
-def groupRocks(rockCoords):
-	#Using all of the (x,y) coordinates generated from the locateRocks()
-	# 	function, rocks will be assigned fewer data points to store and 
-	# 	use less data while pathfinding using the 
-	# 	location of rocks (coord of center and radius)
-	
-	dummyValue = [[[0,0],0][[1,1],1]]
-
-	return array(dummyValue)
-'''
