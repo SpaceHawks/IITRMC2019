@@ -1,3 +1,8 @@
+from hokuyolx import HokuyoLX
+import Detect
+import Locate
+import Grouping
+
 #This is a template for the completed work of the LIDAR team on 
 # 	mapping out the arena's obstacles
 
@@ -30,9 +35,11 @@ def firstRun():
 	
 	rockCoords = [] 		#FIXME --- Make this a numpy array --- FIXME
 
-	while not inMiningZone():
-		frontData = frontLIDAR.get_filtered_dist()
-		backData = backLIDAR.get_filtered_intens()
+	backLidarCoord, robotOrientation = locateRobot(backData)		#find location and orientation for inMiningZone()
+	
+	while not inMiningZone(backLidarCoord):
+		timestampF, frontData = frontLIDAR.get_filtered_dist()
+		timestampB, backData = backLIDAR.get_filtered_intens()
 		backLidarCoord, robotOrientation = locateRobot(backData)
 		irregularities = detectRocks(frontLidar)
 		if len(irregularities) > CHOICE_TO_LOCATE_THRESHOLD:
@@ -55,14 +62,16 @@ def inMiningZone(backLidarCoord):
 	# some code
 
 	return position
-	
+
+'''	
 def detectRocks(frontLIDAR):
 	#Using a threshold TBD, this function will save the angles 
 	# 	and distances from the first LIDAR 
 	#	that are tagged as irregular in shape (items that are 
 	# 	rocks compared to reasonable bumps in
 	# 	gravel)
-	pass
+
+	
 
 #This function will use arguments consisting of the numpy array of points
 #   from the back LIDAR to find the points where reflectivity varies the
@@ -103,5 +112,9 @@ def groupRocks(rockCoords):
 	#Using all of the (x,y) coordinates generated from the locateRocks()
 	# 	function, rocks will be assigned fewer data points to store and 
 	# 	use less data while pathfinding using the 
-	# 	location of rocks (either 4 corners of rectangles or radii/center of circlues)
-	pass
+	# 	location of rocks (coord of center and radius)
+	
+	dummyValue = [[[0,0],0][[1,1],1]]
+
+	return array(dummyValue)
+'''
