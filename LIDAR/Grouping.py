@@ -4,17 +4,40 @@
 import math
 import numpy as np
 
-GROUPING_THRESHOLD = 0
+KEEP_GROUPING_THRESHOLD = 0		#the number of stray points not grouped allowed to end grouping algorithm
+DISTANCE_THRESHOLD = 0			#threshold of distance that decides whether or not two points are in the same group
+MARK = 2						#index of rockCoords that holds the marker
 	
-def point_dist(pointA, pointB):
+def dist(pointA, pointB):
 	return (((pointA[0] - pointB[0]) ** 2) + ((pointA[1] - pointB[1]) ** 2))**(1/2)
 
 def groupRocks(rockCoords):
-	#Using all of the (x,y) coordinates generated from the locateRocks()
-	# 	function, rocks will be assigned fewer data points to store and 
-	# 	use less data while pathfinding using the 
-	# 	location of rocks (coord of center and radius)
+	# based on the rockCoords (x,y) for all points identified by location
+	#	groupRocks will group them into groups represented by ordered pair
+	# 	for a circle center and a scalar for radius, cutting down on data and
+	# 	simplifying obstacle representation
 	
-	dummyValue = [[[0,0],0],[[1,1],1]]
+	countedCoords = 0		#keeps tracked of how many coords have been grouped
+	obstacles = []			#stores the groupings
+	pivot = 0				#the point of focus to populate each group
+	idx = 0					#tracks the index of the current group of focus
+	i = 0					#counter to find the next pivot
 
-	return np.array(dummyValue)
+	while(abs(len(rockCoords)-countedCoords) > KEEP_GROUPING_THRESHOLD):
+		idx = len(obstacles)
+		obstacles.append([])
+		while(rockCoords[i][MARK] != 0):
+			i += 1
+		
+		pivot = i
+
+		for coord in rockCoords:
+			if dist(coord, rockCoords[pivot]) < DISTANCE_THRESHOLD:
+				coord[MARK] += 1
+				countedCoords += 1
+				obstacles[idx].append(coord)
+	
+	#dummyValue = [[[0,0],0],[[1,1],1]]
+	#return np.array(dummyValue)
+	
+	return np.array(obstacles)
