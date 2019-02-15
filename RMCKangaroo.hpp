@@ -6,8 +6,8 @@
 #define DEFAULT_NUMBER_OF_CHANNEL 10
 #define FRONT_RIGHT 0 //channel 3
 #define FRONT_LEFT 1 //channel 4
-#define REAR_LEFT 2 //channel 5
-#define REAR_RIGHT 3 //channel 6
+#define REAR_LEFT 3 //channel 5
+#define REAR_RIGHT 2 //channel 6
 #define WHEEL_MOTOR_MECHANICAL_SPEED_LIMIT 20000
 #define CONVEYOR_MOTOR_MECHANICAL_SPEED_LIMIT 20000
 
