@@ -4,7 +4,7 @@ bool stopAll = false;
 
 
 // pid motor controllers
-RMCKangaroo k(Serial2);
+RMCKangaroo k(Serial3);
 
 /*
 instruction set defined here:
@@ -18,8 +18,6 @@ https://docs.google.com/document/d/1cUTG8RFGPtx6UG5p6J76NQImksJC-LNIKzTHBX8p66E/
     ]
 */
 
-
-
 void setup() {
     Serial.begin(9600);
     Serial1.begin(9600);
@@ -27,9 +25,7 @@ void setup() {
 }
 
 void loop() {
-    //k.motors->drive(10, 100);
     acceptCommands();
-    //checkErrors(); ?
     k.loop();
 }
 
@@ -176,6 +172,7 @@ void cmdDrive(char device, char v1, char v2) {
         k.motors->drive(0, 0);
         stopAll = true;
         break;
+        
     case 1: case 2: case 3: case 4: // control specific wheel
         k.motors->channel[device - 1]->setTargetSpeed((signed char) v1);
         break;
