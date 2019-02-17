@@ -464,8 +464,68 @@ void Motors::stop()
   this->leftSpeed = 0;
   this->rightSpeed = 0;
 }
-Auger::Auger(KangarooSerial& K, char name) :Motor(K, name)
+Auger::Auger(int enablePin, int reversePin)
 {
+  attach(enablePin, reversePin);
+}
+
+void Auger::changeControlPins(int enablePin, int reversePin)
+{
+  release();
+  attach(enablePin, reversePin);
+}
+
+void Auger::attach(int enablePin, int reversePin)// only accept degital pins 2-13
+{
+  if (enablePin >= 2 && enablePin <= 13 && reversePin >= 2 && reversePin <= 13 && enablePin != reversePin)
+  {
+    this->enablePin = enablePin;
+    this->reversePin = reversePin;
+    pinMode(enablePin, OUTPUT);
+    pinMode(reversePin, OUTPUT);
+  }
+}
+
+void Auger::release()
+{
+  pinMode(enablePin, INPUT);
+  pinMode(reversePin, INPUT);
+}
+
+void Auger::forward()
+{
+  digitalWrite(enablePin, HIGH);
+  digitalWrite(reversePin, LOW);
+}
+
+void Auger::reverse()
+{
+  digitalWrite(enablePin, HIGH);
+  digitalWrite(reversePin, HIGH);
+}
+
+void Auger::setDirection(int enable, int direction)
+{
+  if (enable == 1)
+  {
+    if (direction == 1) //reverse
+    {
+      reverse();
+    }
+    else if (direction == 0) //reverse
+    {
+      forward();
+    }
+  }
+  else if (enable == 0) {
+    stop();
+  }
+}
+
+void Auger::stop()
+{
+  digitalWrite(enablePin, LOW);
+  digitalWrite(reversePin, LOW);
 }
 
 /*!
@@ -478,7 +538,7 @@ RMCKangaroo::RMCKangaroo(USARTClass &serial)
   K = new KangarooSerial(*SerialPort);
   motors = new Motors(*K, '1');
   linearActuatorPair = new LinearActuatorPair(*K, '1');
-  auger = new Auger(*K, '9');
+  auger = new Auger(2, 3);
   slider = new Slider(*K, '7');
   conveyor = new Conveyor(*K, '8');
 }
