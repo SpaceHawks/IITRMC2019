@@ -1,6 +1,16 @@
 import xbox;
 import comms;
 import time;
+import signal;
+import sys;
+def signal_handler(sig, frame):
+    print('You pressed Ctrl+C!');
+    comms.send([1, 10, 0, 0]);
+    sys.exit(0);
+
+signal.signal(signal.SIGINT, signal_handler);
+#signal.pause();
+
 
 # get the joystick speed from the xbox controller
 def get_speed_turn(joy):
@@ -12,7 +22,10 @@ def get_speed_turn(joy):
 
 # send command to the robot
 def send_drive_cmd(speed, turn):
-    comms.send([1, 10, speed, turn]);
+    V = (100 - abs(turn)) * (speed / 100) + speed;
+    W = (100 - abs(speed)) * (turn / 100) + turn;
+    
+    comms.send([1, 11, (V+W)/2, (V-W)/2]);
 
 # xbox controller
 joy = xbox.Joystick();
