@@ -17,5 +17,5 @@ with open(str(fileName) + ".csv", 'w') as pw:
 		pw.write(str(data[i][0]) + "," + str(data[i][1]) + "," + str(data[i][2]))
 		if i != len(data)-1:
 			pw.write("\n")
-		pw.close()
+	pw.close()
 lidar.close()
