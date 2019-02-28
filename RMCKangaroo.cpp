@@ -309,43 +309,37 @@ void Motors::setSpeedLimit(int newSpeed) { // speed is percent
 
 void Motors::loop()
 {
-  for (int i = 0; i < 4; i++) {
+  for (int i = 0; i < 4; i++)
     channel[i]->mode = mode;
-  }
+  
   if (mode == 1 && alreadySetTargetPos == false) {
     if (angle <= 180 && angle >= -180) {
       long leftPos;
       long rightPos;
-      if (angle < 0)
-      {
+      if (angle < 0) {
         leftPos = -angle;
         rightPos = angle;
-      }
-      else if (angle > 0)
-      {
+      } else if (angle > 0) {
         leftPos = angle;
         rightPos = -angle;
-      }
-      else {
+      } else {
         leftPos = targetPos;
         rightPos = targetPos;
       }
-      channel[FRONT_LEFT]->setTargetPos(-leftPos);
-      channel[FRONT_RIGHT]->setTargetPos(-rightPos);
+      channel[FRONT_LEFT]->setTargetPos(leftPos);
+      channel[FRONT_RIGHT]->setTargetPos(rightPos);
       channel[REAR_LEFT]->setTargetPos(leftPos);
       channel[REAR_RIGHT]->setTargetPos(rightPos);
-      alreadySetTargetPos = true; //fix this
+      alreadySetTargetPos = true; //FIXME
     }
   }
   //
-  channel[FRONT_LEFT]->setTargetSpeed(-leftSpeed);
-  channel[FRONT_RIGHT]->setTargetSpeed(-rightSpeed);
+  channel[FRONT_LEFT]->setTargetSpeed(leftSpeed);
+  channel[FRONT_RIGHT]->setTargetSpeed(rightSpeed);
   channel[REAR_LEFT]->setTargetSpeed(leftSpeed);
   channel[REAR_RIGHT]->setTargetSpeed(rightSpeed);
-  for (int i = 0; i < 4; i++)
-  {
-    if (channel[i]->done == true)
-    {
+  for (unsigned char i = 0; i < 4; i++) {
+    if (channel[i]->done == true) {
       channel[i]->done == false;
       channel[i]->setTargetSpeed(0);
     }
