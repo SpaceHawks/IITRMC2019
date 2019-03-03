@@ -19,3 +19,5 @@ with open(str(fileName) + ".csv", 'w') as pw:
 			pw.write("\n")
 	pw.close()
 lidar.close()
+
+#commment
