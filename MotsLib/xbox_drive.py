@@ -3,6 +3,7 @@ import comms;
 import time;
 import signal;
 import sys;
+import mots;
 
 
 # make it so that when user ends manual control the robot is first told to stop moving
@@ -33,11 +34,26 @@ def send_drive_cmd(speed, turn):
     comms.send([1, 11, l, r]);
 
 
+drill_status = 0;
+drill_direction = 1;
+auger = Auger();
+# read buttons from xbox-controller
+def control_auger(joy):
+    # toggle buttons to control the auger
+    if joy.A(): # toggle power
+        drill_status = !drill_status;
+    if joy.B(): # toggle direction
+        drill_direction = -drill_direction;
+    auger.set_drill(drill_status * drill_direction);
+
+
 # xbox controller
 joy = xbox.Joystick();
+
 
 # main loop
 while True:
     speed, turn = get_speed_turn(joy);
     send_drive_cmd(speed, turn);
+
     time.sleep(1 / 8); # 8 fps

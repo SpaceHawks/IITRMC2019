@@ -172,7 +172,7 @@ void cmdDrive(char device, char v1, char v2) {
         k.motors->drive(0, 0);
         stopAll = true;
         break;
-        
+
     case 1: case 2: case 3: case 4: // control specific wheel
         k.motors->channel[device - 1]->setTargetSpeed((signed char) v1);
         break;
@@ -216,8 +216,8 @@ void cmdDrive(char device, char v1, char v2) {
         if (v1 == 1) {
             k.slider->home().wait();
         } else if (v2 == 0) {
+            k.slider->home(); //.wait(); //was: setTargetPosDirect(SLIDER_INITIAL_POS);
             k.slider->setSpeed(100);
-            k.slider->home(); //.wait();// was: setTargetPosDirect(SLIDER_INITIAL_POS);
         }
         break;
 
@@ -253,6 +253,7 @@ void cmdAuto(char device, char v1, char v2) {
         case 6:
             // dump everything into arena's bin
             break;
+        case 7:
         default:
             Serial.print("command 2: invalid device");
             Serial.println((int)device);

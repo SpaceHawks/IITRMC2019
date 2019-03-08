@@ -10,7 +10,8 @@
 #define REAR_RIGHT 2 //channel 6
 #define WHEEL_MOTOR_MECHANICAL_SPEED_LIMIT 20000
 #define CONVEYOR_MOTOR_MECHANICAL_SPEED_LIMIT 20000
-
+#define AUGER_ENABLE_PIN 2
+#define AUGER_DIRECTION_PIN 3
 /*!
 \class Actuator
 \brief This parent class ensures Linear Actuator and motor class inherits the general functions.

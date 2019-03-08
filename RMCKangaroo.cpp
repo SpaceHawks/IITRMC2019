@@ -311,7 +311,7 @@ void Motors::loop()
 {
   for (int i = 0; i < 4; i++)
     channel[i]->mode = mode;
-  
+
   if (mode == 1 && alreadySetTargetPos == false) {
     if (angle <= 180 && angle >= -180) {
       long leftPos;
@@ -500,20 +500,13 @@ void Auger::reverse()
 
 void Auger::setDirection(int enable, int direction)
 {
-  if (enable == 1)
-  {
+  if (enable == 1) {
     if (direction == 1) //reverse
-    {
       reverse();
-    }
-    else if (direction == 0) //reverse
-    {
+    else if (direction == 0) //fwd
       forward();
-    }
-  }
-  else if (enable == 0) {
+  } else if (enable == 0)
     stop();
-  }
 }
 
 void Auger::stop()
@@ -531,8 +524,8 @@ RMCKangaroo::RMCKangaroo(USARTClass &serial)
   SerialPort = &serial;
   K = new KangarooSerial(*SerialPort);
   motors = new Motors(*K, '1');
-  linearActuatorPair = new LinearActuatorPair(*K, '1');
-  auger = new Auger(2, 3);
+  linearActuatorPair = new LinearActuatorPair(*K, '1'); // FIXME: this is probably wrong
+  auger = new Auger(AUGER_ENABLE_PIN, AUGER_DIRECTION_PIN);
   slider = new Slider(*K, '7');
   conveyor = new Conveyor(*K, '8');
 }
