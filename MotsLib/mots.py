@@ -16,7 +16,7 @@ class Drivetrain():
         comms.send([1, 1 + wheelNum, speed, speed]);
 
     # both range from negative to positive 100%
-    def drive(speed, turn):
+    def drive(speed, turn): # Arduino code for command apparently doesn't work
         comms.send([1, 10, speed, turn]);
 
     # left and right are on range of +/- 100%
@@ -35,21 +35,21 @@ class Drivetrain():
         comms.send([3, 10, 0, 0]);
 
 
-
 # mining subsystem, auger, linear actuators, conveyor, etc.
 class Auger():
-    def __init__(self):
-        pass;
-
     def set_actuator(pos, speed):
         comms.send([1, 5, pos, speed]);
+
     def set_slider(pos, speed):
         comms.send([1, 7, pos, speed]);
 
     # accepts 3 states
     # 0 : off, 1 : forwards, -1 : backwards
-    def set_drill(state):
-        comms.send([1, 8, 1 if state else 0, state]);
+    def set_drill(state, direction=None):
+        if direction:
+            comms.send([1, 8, state, direction]);
+        else:
+            comms.send([1, 8, 1 if state else 0, state < 0]);
 
     def conveyor(speed):
         comms.send([1, 9, speed, speed]);

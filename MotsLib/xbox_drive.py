@@ -31,20 +31,19 @@ def send_drive_cmd(speed, turn):
 	l = (v + w) / 2;
 	r = (v - w) / 2;
 	# send tank drive command
-    comms.send([1, 11, l, r]);
+    mots.tank_drive(l, r);
 
 
-drill_status = 0;
-drill_direction = 1;
-auger = Auger();
+drill_status = False;
+drill_direction = False;
 # read buttons from xbox-controller
 def control_auger(joy):
     # toggle buttons to control the auger
     if joy.A(): # toggle power
-        drill_status = !drill_status;
+        drill_status = not drill_status;
     if joy.B(): # toggle direction
-        drill_direction = -drill_direction;
-    auger.set_drill(drill_status * drill_direction);
+        drill_direction = not drill_direction;
+    mots.Auger.set_drill(drill_status, drill_direction);
 
 
 # xbox controller
