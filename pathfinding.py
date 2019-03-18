@@ -26,14 +26,12 @@ class Pathfinding:
         x2 = y2 = 0.0
         x3 = y3 = 0.0
 
-    def pathFinder(self, numObstacle): # Returns path of 3 points to move to
+    def pathFinder(self, numObstacle): # Returns a path of the next 3 points
         print("Start Pathfinding")
 
         if(numObstacle == 0):
             self.moveStraight()
-            #x2=None,y2=None,x3=None,y3=None
-            #self.obstacle[0][0]=None, self.obstacle[0][1]=None,
-            #self.obstacle[1][0]=None, self.obstacle[1][1]=None
+            #x2 = y2 = x3 = y3 = self.obstacle[0][0]]= [0][1]= [1][0] = [1][1] = None
             self.draw(self.rX, self.rY,x1,y1, None,None,None,None,None, None, None, None)
         if(numObstacle == 1):
             self.pathA(1)
@@ -45,12 +43,13 @@ class Pathfinding:
            pass # need to implement
 
     def moveTo(self, x, y): # move robot to given (x,y) coordinates
-        pass # need to implement using motor class
+        pass # need to implement using aruidno motor class
 
     def moveStraight(self): # moves robot forward/backward 10 cm
         global x1
         global y1
 
+        #Set directon to moving forward or backward
         if (self.isForward == True):
             dest = 1
         else:
@@ -58,7 +57,7 @@ class Pathfinding:
         print(self.rX, self.rY)
         x1 = self.rX+dest*10
         y1 = self.rY
-        self.moveTo(self.rX+dest*10, self.rY)
+        self.moveTo(x1, y1)   #Move 10cm forward
 
     def pathA(self, num): # if numObstacle == 1
         global xA
@@ -69,10 +68,13 @@ class Pathfinding:
         global y2
         global x3
         global y3
+
+        #Set directon to moving forward or backward
         if(self.isForward == True):
             dest = 1
         else:
             dest = -1
+
         if(num == 1):
             xA = self.obstacle[0][0]
             yA = self.obstacle[0][1]
@@ -114,11 +116,11 @@ class Pathfinding:
         x1 = xA - dest * (self.r + 40)
         y1 = y3 - dir*(self.r+ 40)/3
         if(dest*x1 > dest*self.rX):
-            self.moveTo(x1,y1)
+            self.moveTo(x1,y1)      #Move to first point
         if (dest * x2 > dest * self.rX):
-            self.moveTo(x2, y2)
+            self.moveTo(x2, y2)     #Move to second point
         if (dest * x3 > dest * self.rX):
-            self.moveTo(x3, y3)
+            self.moveTo(x3, y3)     #Move to third point
 
     def pathB(self): # if numObstacle == 2
         global xA
@@ -169,12 +171,13 @@ class Pathfinding:
                 x1 = x2 - dest*20
                 y3 = y2
                 x3 = x2 + dest*20
+
             if(dest*x1 > dest*self.rX):
-                self.moveTo(x1,y1)
+                self.moveTo(x1,y1)      #Move to first point
             if (dest * x2 > dest * self.rX):
-                self.moveTo(x2, y2)
+                self.moveTo(x2, y2)     #Move to second point
             if (dest * x3 > dest * self.rX):
-                self.moveTo(x3, y3)
+                self.moveTo(x3, y3)     #Move to third point
         else:
             self.pathA(2) # treat the two obstacles as a single big one
 
