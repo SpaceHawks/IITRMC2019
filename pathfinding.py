@@ -4,29 +4,29 @@ import math
 
 class Pathfinding:
     def __init__(self, rx ,ry):
-        print("init")
-
-        self.isForward = True
+        self.isForward = True       #If the robot is going forward
         self.r = 50.0 # radius of robot
-        self.rX = rx # x-coordinate of robot
-        self.rY = ry # y-coordinate of robot
+        self.rX = rx  # x-coordinate of robot
+        self.rY = ry  # y-coordinate of robot
 
-        self.numObstacle = 0 # num of relevant obstacles
-        self.obstacle = [[0.0, 0.0, 0.0],
-                        [0.0, 0.0, 0.0]] # works with only 2 obstacles at any time
+        self.numObstacle = 0 # num of current detected obstacles
+        # coordinates of 2 detected obstacles
+        self.obstacle = [[0.0, 0.0, 0.0], [0.0, 0.0, 0.0]]
+
 
         dir = 1     #Direction faced by the robot
         dest = 1    #Direction of destination (-1 = bin, 1 = mining area)
 
+        #Coordinate of first obstacle
         xA = yA = 0.0
-        xB = 0.0
-        yB = 0.0
-        x1 = 0.0
-        y1 = 0.0
-        x2 = 0.0
-        y2 = 0.0
-        x3 = 0.0
-        y3 = 0.0
+
+        #Coordinate of first obstacle
+        xB = yB = 0.0
+
+        #Coordinate of the next 3 steps to be taken
+        x1 = y1 = 0.0
+        x2 = y2 = 0.0
+        x3 = y3 = 0.0
 
     def pathFinder(self, numObs): # Returns path of 3 points to move to
         print("start")
