@@ -9,10 +9,8 @@ class Pathfinding:
         self.rX = rx  # x-coordinate of robot
         self.rY = ry  # y-coordinate of robot
 
-        self.numObstacle = 0 # num of current detected obstacles
         # coordinates of 2 detected obstacles
         self.obstacle = [[0.0, 0.0, 0.0], [0.0, 0.0, 0.0]]
-
 
         dir = 1     #Direction faced by the robot
         dest = 1    #Direction of destination (-1 = bin, 1 = mining area)
@@ -28,28 +26,39 @@ class Pathfinding:
         x2 = y2 = 0.0
         x3 = y3 = 0.0
 
-    def pathFinder(self, numObs): # Returns path of 3 points to move to
-        print("start")
-        numObstacle = numObs
+    def pathFinder(self, numObstacle): # Returns path of 3 points to move to
+        print("Start Pathfinding")
+
         if(numObstacle == 0):
-            moveStraight()
+            self.moveStraight()
+            #x2=None,y2=None,x3=None,y3=None
+            #self.obstacle[0][0]=None, self.obstacle[0][1]=None,
+            #self.obstacle[1][0]=None, self.obstacle[1][1]=None
+            self.draw(self.rX, self.rY,x1,y1, None,None,None,None,None, None, None, None)
         if(numObstacle == 1):
             self.pathA(1)
+            self.draw(self.rX, self.rY,x1,y1,x2,y2,x3,y3,self.obstacle[0][0], self.obstacle[0][1], None, None)
         if(numObstacle == 2):
             self.pathB()
+            self.draw(self.rX, self.rY,x1,y1,x2,y2,x3,y3,self.obstacle[0][0], self.obstacle[0][1], self.obstacle[1][0], self.obstacle[1][1])
         else:# eliminate unnecessary obstacle
            pass # need to implement
-        self.draw(self.rX, self.rY, self.obstacle[0][0], self.obstacle[0][1], self.obstacle[1][0], self.obstacle[1][1],x1,y1,x2,y2,x3,y3)
 
     def moveTo(self, x, y): # move robot to given (x,y) coordinates
         pass # need to implement using motor class
 
     def moveStraight(self): # moves robot forward/backward 10 cm
-        if (isForward == True):
+        global x1
+        global y1
+
+        if (self.isForward == True):
             dest = 1
         else:
             dest = -1
-        moveTo(rX+dest*10,rY)
+        print(self.rX, self.rY)
+        x1 = self.rX+dest*10
+        y1 = self.rY
+        self.moveTo(self.rX+dest*10, self.rY)
 
     def pathA(self, num): # if numObstacle == 1
         global xA
@@ -169,12 +178,17 @@ class Pathfinding:
         else:
             self.pathA(2) # treat the two obstacles as a single big one
 
-    def draw(self, rX,rY,xA,yA,xB,yB,x1,y1,x2,y2,x3,y3): # plot to test cases
+    def draw(self, rX,rY,x1,y1,x2,y2,x3,y3,xA,yA,xB,yB): # plot to test cases
         plt.plot([rX, x1, x2, x3], [rY, y1,y2,y3])
-        plt.plot([xA-10.6, xA-10.6, xA+10.6, xA+10.6, xA-10.6 ], [yA-10.6, yA+10.6, yA+10.6, yA-10.6, yA-10.6])
-        plt.plot([xB-10.6, xB-10.6, xB+10.6, xB+10.6, xB-10.6 ], [yB-10.6, yB+10.6, yB+10.6, yB-10.6, yB-10.6])
+
+        if((xA != None) & (yA != None)):
+                        plt.plot([xA-10.6, xA-10.6, xA+10.6, xA+10.6, xA-10.6 ], [yA-10.6, yA+10.6, yA+10.6, yA-10.6, yA-10.6])
+        if((xB != None) & (yB != None)):
+            plt.plot([xB-10.6, xB-10.6, xB+10.6, xB+10.6, xB-10.6 ], [yB-10.6, yB+10.6, yB+10.6, yB-10.6, yB-10.6])
+
         plt.plot([rX-40, rX-40, rX+40, rX+40, rX-40 ], [rY-40, rY+40, rY+40, rY-40, rY-40])
         plt.plot([x1-40, x1-40, x1+40, x1+40, x1-40 ], [y1-40, y1+40, y1+40, y1-40, y1-40])
-        plt.plot([x2-40, x2-40, x2+40, x2+40, x2-40 ], [y2-40, y2+40, y2+40, y2-40, y2-40])
-        plt.plot([x3-40, x3-40, x3+40, x3+40, x3-40 ], [y3-40, y3+40, y3+40, y3-40, y3-40])
+        if((x2 != None) & (y2 != None) & (x3 != None) & (y3 != None)):
+            plt.plot([x2-40, x2-40, x2+40, x2+40, x2-40 ], [y2-40, y2+40, y2+40, y2-40, y2-40])
+            plt.plot([x3-40, x3-40, x3+40, x3+40, x3-40 ], [y3-40, y3+40, y3+40, y3-40, y3-40])
         plt.show()
