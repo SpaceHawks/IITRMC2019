@@ -1,11 +1,11 @@
-import serial
-
+import serial;
+import time;
 ser = serial.Serial("/dev/ttyS1", 9600);
 
 def send(data):
 
 	# append checksum to end of data
-	data.append((-getSum(data)) % 256);
+	data.append((-sum(data)) % 256);
 
 	# convert data to ints
 	data = list(map(int, data));
@@ -16,13 +16,7 @@ def send(data):
 	#
 	data = bytearray(data)
 	ser.write(data)
-
-# value needed to make total to zero with overflow
-def getSum(data):
-	sum = 0;
-	for i in data:
-		sum += i;
-	return sum;
+	time.sleep(1 / 32);
 
 # verify all elems are one byte
 def checkData(data):
