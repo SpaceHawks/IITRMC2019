@@ -33,18 +33,43 @@ def send_drive_cmd(speed, turn):
 	# send tank drive command
     mots.tank_drive(l, r);
 
-
-drill_status = False;
-drill_direction = False;
 # read buttons from xbox-controller
 def control_auger(joy):
-    # toggle buttons to control the auger
-    if joy.A(): # toggle power
-        drill_status = not drill_status;
-    if joy.B(): # toggle direction
-        drill_direction = not drill_direction;
-    mots.Auger.set_drill(drill_status, drill_direction);
 
+    # TODO: prevent retriggering
+    # toggle buttons to control the auger
+    if not control_auger.t_d_status and joy.A():
+        control_auger.d_status = not control_auger.d_status;
+        control_auger.t_d_status = True;
+    elif control_auger.t_d_status and not joy.A():
+        control_auger.t_d_status = False;
+
+    if not control_auger.t_d_dir and joy.A():
+        control_auger.d_dir = not control_auger.d_dir;
+        control_auger.t_d_dir = True;
+    elif control_auger.t_d_dir and not joy.A():
+        control_auger.t_d_dir = False;
+
+    mots.Auger.set_drill(control_auger.d_status, control_auger.d_dir);
+
+    if joy.X():
+        mots.Auger.set_slider(100,100);
+    elif joy.Y():
+        mots.Auger.set_slider(100, 100);
+
+    if joy.leftBumper():
+        mots.Auger.set_actuator(0, 100);
+    elif joy.rightBumper():
+        mots.Auger.set_actuator(75, 100);
+    else
+        mots.Auger.set_actuator(0, 0);
+
+    mots.Auger.set_conveyor(100 * (joy.rightTrigger() - joy.leftTrigger()));
+
+control_auger.d_status = False;
+control_auger.d_dir = False;
+control_auger.t_d_status = False;
+control_auger.t_d_dir = False;
 
 # xbox controller
 joy = xbox.Joystick();
@@ -54,5 +79,6 @@ joy = xbox.Joystick();
 while True:
     speed, turn = get_speed_turn(joy);
     send_drive_cmd(speed, turn);
+    control_auger(joy);
 
     time.sleep(1 / 8); # 8 fps
