@@ -3,8 +3,9 @@ bool stopAll = false;
 #include "RMCKangaroo.hpp"
 
 
+
 // pid motor controllers
-RMCKangaroo k(Serial3);
+RMCKangaroo k(Serial1);
 
 /*
 instruction set defined here:
@@ -17,10 +18,9 @@ https://docs.google.com/document/d/1cUTG8RFGPtx6UG5p6J76NQImksJC-LNIKzTHBX8p66E/
         Checksum: uint8_t
     ]
 */
-
 void setup() {
     Serial.begin(9600);
-    Serial1.begin(9600);
+    Serial2.begin(9600); // tinker board connection
     k.begin();
 }
 
@@ -62,19 +62,19 @@ void sendMulti(const char device, const char v1, const char v2) {
 
 
 void acceptCommands() {
-    while (Serial1.available() > 4) {
+    while (Serial2.available() > 4) {
         Serial.println("msg received:");
 
         // read msg from serial
         // should have 5 vals: cmd, device, v1, v2, checksum
         char msg[5];
-        Serial1.readBytes(msg, 5);
+        Serial2.readBytes(msg, 5);
         for (char c : msg)
             Serial.println((int) c);
 
         // checksum should make msg total to zero otherwise its invalid
         char sum = checkSum(msg, 5);
-        while (sum != 0 && Serial1.available()) {
+        while (sum != 0 && Serial2.available()) {
             Serial.println("invalid msg");
             Serial.print("sum:");
             Serial.println((int) sum);
@@ -84,7 +84,7 @@ void acceptCommands() {
             for (uint8_t i = 4; i > 0; i--)
                 msg[i] = msg[i - 1];
             // read new start byte
-            msg[0] = Serial1.read();
+            msg[0] = Serial2.read();
 
             // check if it's valid
             sum = checkSum(msg, 5);
@@ -172,7 +172,7 @@ void cmdDrive(char device, char v1, char v2) {
         k.motors->drive(0, 0);
         stopAll = true;
         break;
-
+        
     case 1: case 2: case 3: case 4: // control specific wheel
         k.motors->channel[device - 1]->setTargetSpeed((signed char) v1);
         break;
@@ -182,15 +182,16 @@ void cmdDrive(char device, char v1, char v2) {
         break;
 
     case 7: // auger slider
-        k.slider->setTargetPosAndSpeed(v1, v2);
+        //k.slider->setTargetPosAndSpeed(v1, v2);
+        k.slider->setSpeed(v1); 
         break;
 
     case 8: // auger drill motor
         k.auger->setDirection(v1, v2);
-        break;
+        break;  
 
     case 9: // dumping conveyor
-        k.conveyor->setTargetSpeed(v1); // was v2, changed to v1 bc it makes more sense
+        k.conveyor->set(v1);
         break;
 
     case 10: // drive magnitude + direction
@@ -216,8 +217,8 @@ void cmdDrive(char device, char v1, char v2) {
         if (v1 == 1) {
             k.slider->home().wait();
         } else if (v2 == 0) {
-            k.slider->home(); //.wait(); //was: setTargetPosDirect(SLIDER_INITIAL_POS);
             k.slider->setSpeed(100);
+            k.slider->home(); //.wait();// was: setTargetPosDirect(SLIDER_INITIAL_POS);
         }
         break;
 
@@ -253,7 +254,6 @@ void cmdAuto(char device, char v1, char v2) {
         case 6:
             // dump everything into arena's bin
             break;
-        case 7:
         default:
             Serial.print("command 2: invalid device");
             Serial.println((int)device);

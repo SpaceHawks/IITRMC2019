@@ -9,9 +9,8 @@
 #define REAR_LEFT 3 //channel 5
 #define REAR_RIGHT 2 //channel 6
 #define WHEEL_MOTOR_MECHANICAL_SPEED_LIMIT 20000
-#define CONVEYOR_MOTOR_MECHANICAL_SPEED_LIMIT 20000
-#define AUGER_ENABLE_PIN 2
-#define AUGER_DIRECTION_PIN 3
+#define SLIDER_MOTOR_MECHANICAL_SPEED_LIMIT 20000
+
 /*!
 \class Actuator
 \brief This parent class ensures Linear Actuator and motor class inherits the general functions.
@@ -25,8 +24,6 @@ public:
   long *getCurrentVal();
   KangarooError errorStatus;
   void getStatus(KangarooError * output, int startIndex);
-
-private:
 
 };
 
@@ -169,17 +166,24 @@ public:
   char currentPos;
 };
 
-class Slider : public LinearActuator {
+class Slider : public Motor {
 public:
   Slider(KangarooSerial& K, char name);
-  void stop();
+  void setSpeed(int8_t speed);
 };
 
-class Conveyor : public Motor {
+class Conveyor {
 public:
-  Conveyor(KangarooSerial& K, char name);
-  void setSpeedLimit(long newSpeed); //speed is percentage
-  char currentSpeeds[2];
+  int8_t pin;
+  bool state;
+  Conveyor(const int8_t pin)
+    { pinMode(pin, OUTPUT); }
+  void set(const bool on)
+    { state = on; }
+  void stop()
+    { this->set(false); }
+  void loop()
+    { digitalWrite(pin, state); }
 };
 
 
@@ -188,16 +192,14 @@ public:
 \brief This the main class for Kangaroo X2 Motion Controller
 */
 class RMCKangaroo
-{
-protected:
+{    
+public:
   int channelIndex[DEFAULT_NUMBER_OF_CHANNEL];
   Motors* channel[DEFAULT_NUMBER_OF_CHANNEL];
   USARTClass* SerialPort;
   KangarooSerial* K;
   String channelList;
   String channelType;
-
-public:
   Motors* motors;
   LinearActuatorPair* linearActuatorPair;
   Auger* auger;
@@ -209,5 +211,4 @@ public:
   void getStatus(KangarooError *errorStatuses);
   void stop();
   KangarooStatus status[DEFAULT_NUMBER_OF_CHANNEL];
-
 };
