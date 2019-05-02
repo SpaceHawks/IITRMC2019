@@ -3,7 +3,6 @@ import time;
 ser = serial.Serial("/dev/ttyS1", 9600);
 
 def send(data):
-
 	# append checksum to end of data
 	data.append((-sum(data)) % 256);
 
@@ -12,10 +11,8 @@ def send(data):
 
 	# verify all elems are one byte
 	data = checkData(data);
-
-	#
-	data = bytearray(data)
-	ser.write(data)
+	data = bytearray(data);
+	ser.write(data);
 	time.sleep(1 / 32);
 
 # verify all elems are one byte
@@ -31,3 +28,18 @@ def receive():
         return None;
     data = serial.read(5);
     return data;
+
+
+import RPi.GPIO as GPIO;
+
+# reset arduino
+def reset_arduino():
+	GPIO.setmode(GPIO.BCM);
+	GPIO.setwarnings(False);
+	GPIO.setup(18, GPIO.OUT);
+	time.sleep(5);
+	GPIO.output(18, GPIO.LOW);
+	time.sleep(.2);
+	GPIO.output(18, GPIO.HIGH);
+
+reset_arduino();
