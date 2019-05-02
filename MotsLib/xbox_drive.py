@@ -9,7 +9,7 @@ comms.reset_arduino();
 
 # make it so that when user ends manual control the robot is first told to stop moving
 def signal_handler(sig, frame):
-    print("Stopped program");
+    print("Program stopped.");
     comms.send([1, 10, 0, 0]);
     sys.exit(0);
 
@@ -20,8 +20,9 @@ signal.signal(signal.SIGINT, signal_handler);
 def get_speed_turn(joy):
     x, y = joy.leftStick();
     print("x:%s, y:%s" % (x,y));
-    speed = y * 100;
-    turn = x * 100;
+    speed = y * 100 if abs(y) < 0.07 else 0;
+    turn = x * 100 if abs(x) < 0.07 else 0;
+
     return (speed, turn);
 
 # send command to the robot
@@ -32,7 +33,7 @@ def send_drive_cmd(speed, turn):
 	l = (v + w) / 2;
 	r = (v - w) / 2;
 	# send tank drive command
-	mots.tank_drive(l, r);
+	mots.Drivetrain.tank_drive(l, r);
 
 # read buttons from xbox-controller
 def control_auger(joy):
