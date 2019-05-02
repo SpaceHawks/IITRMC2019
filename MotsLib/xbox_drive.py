@@ -5,10 +5,11 @@ import signal;
 import sys;
 import mots;
 
+comms.reset_arduino();
 
 # make it so that when user ends manual control the robot is first told to stop moving
 def signal_handler(sig, frame):
-    print('You pressed Ctrl+C!');
+    print("Stopped program");
     comms.send([1, 10, 0, 0]);
     sys.exit(0);
 
@@ -31,7 +32,7 @@ def send_drive_cmd(speed, turn):
 	l = (v + w) / 2;
 	r = (v - w) / 2;
 	# send tank drive command
-    mots.tank_drive(l, r);
+	mots.tank_drive(l, r);
 
 # read buttons from xbox-controller
 def control_auger(joy):
@@ -61,7 +62,7 @@ def control_auger(joy):
         mots.Auger.set_actuator(0, 100);
     elif joy.rightBumper():
         mots.Auger.set_actuator(75, 100);
-    else
+    else:
         mots.Auger.set_actuator(0, 0);
 
     mots.Auger.set_conveyor(100 * (joy.rightTrigger() - joy.leftTrigger()));
@@ -81,4 +82,4 @@ while True:
     send_drive_cmd(speed, turn);
     control_auger(joy);
 
-    time.sleep(1 / 8); # 8 fps
+    #time.sleep(1 / 8); # 8 fps
