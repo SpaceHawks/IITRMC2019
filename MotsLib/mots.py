@@ -5,8 +5,6 @@ import comms;
 
 # robot is 4wd
 class Drivetrain():
-    def __init__(self):
-        pass;
 
     # wheel num goes from 0-3
     # 1 0
