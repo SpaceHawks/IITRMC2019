@@ -4,10 +4,10 @@
 
 
 #define DEFAULT_NUMBER_OF_CHANNEL 10
-#define FRONT_RIGHT 0 //channel 3
-#define FRONT_LEFT 1 //channel 4
-#define REAR_LEFT 3 //channel 5
-#define REAR_RIGHT 2 //channel 6
+#define FRONT_LEFT 0
+#define FRONT_RIGHT 1
+#define REAR_RIGHT 2
+#define REAR_LEFT 3
 #define WHEEL_MOTOR_MECHANICAL_SPEED_LIMIT 20000
 #define SLIDER_MOTOR_MECHANICAL_SPEED_LIMIT 20000
 
@@ -24,7 +24,6 @@ public:
   long *getCurrentVal();
   KangarooError errorStatus;
   void getStatus(KangarooError * output, int startIndex);
-
 };
 
 /*!
@@ -174,8 +173,8 @@ public:
 
 class Conveyor {
 public:
-  int8_t pin;
-  bool state;
+  int8_t pin : 7;
+  bool state : 1;
   Conveyor(const int8_t pin)
     { pinMode(pin, OUTPUT); }
   void set(const bool on)
